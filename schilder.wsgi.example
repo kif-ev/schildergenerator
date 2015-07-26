@@ -1,6 +1,6 @@
 import logging, sys
 
-path = '/path/to/schilder'
+path = '/path/to/schildergenerator'
 
 if path not in sys.path:
 	sys.path.append(path)
