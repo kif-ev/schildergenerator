@@ -1,0 +1,62 @@
+#### BASIC CONFIGURATION
+
+# Secret key (used for session cookie encryption). Needs to be set to some random string.
+# Yes, just smash your keyboard for some random characters. No, don't publish them anywhere.
+# Yes, you will need this. If you get random RuntimeErrors, you did not set this.
+app_secret = ''
+
+## You will need to use absolute paths!
+
+# Base directory. You need to set this again in schilder.wsgi if you use WSGI.
+basedir = '/home/dave/Development/schildergenerator'
+
+# Temp directory for imagemagick/pdflatex work files (needs to be writeable)
+tmpdir = '/tmp'
+
+## All following directories derive from basedir, you don't really need to alter them
+
+# Data directory (needs to be writeable)
+datadir = basedir + '/data'
+
+# HTML template directory
+templatedir = basedir + '/templates'
+
+# TeX template directory
+textemplatedir = basedir + '/tex'
+
+# TeX support file directory (all files that might be needed by a tex template)
+texsupportdir = textemplatedir + '/support'
+
+# PDF data directory (needs to be writeable)
+pdfdir = datadir + '/pdf'
+
+# Image data directory (needs to be writeable)
+imagedir = datadir + '/images'
+
+# Upload temp directory (needs to be writeable)
+uploaddir = datadir + '/upload'
+
+# allowed image upload file extensions
+allowed_extensions = set(['png', 'jpg', 'jpeg', 'gif'])
+
+
+#### PRINTER OPTIONS
+
+# CUPS printer names
+printers = { 
+    'Human readable printer description' : 'CUPS-ID-String', 
+    'Color Printer in room 1337' : 'Brother_ColorLaserJet_6V', 
+    'B/W Printer in room 0' : 'HP_HL-38281', 
+}
+printserver = 'localhost'
+
+# additional lpr options. Use an empty list if not needed.
+lproptions=['-Fa4g', '-N1', '-o fitplot']
+
+
+#### DEVELOPERS ONLY
+# Listening interface and port, usually '127.0.0.1' or '0.0.0.0'
+# Only effective if started from command line (instead via webserver/WSGI),
+# therefore these options would only be interesting to a developer.
+listen = '127.0.0.1'
+port = 5432

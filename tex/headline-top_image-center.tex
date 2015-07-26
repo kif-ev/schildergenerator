@@ -1,0 +1,16 @@
+\documentclass{beamer}
+
+\input{support/header}
+
+\begin{document}
+
+\begin{frame}
+~\vfill
+\defaulthead{${ form.headline }}
+\vskip1.2cm
+\begin{center}
+	\IfFileExists{ ${form.img} }{\includegraphics[height=.87\textheight]{${ form.img }}}{}
+\end{center}
+\end{frame}
+
+\end{document}

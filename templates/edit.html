@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- <html xmlns="http://www.w3.org/1999/xhtml" > -->
+<html xmlns:py="http://genshi.edgewall.org/">
+<head>
+	<link rel='stylesheet' type='text/css' href="${ url_for('static', filename='main.css') }"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Schildergenerator</title>
+</head>
+<body>
+	<py:with vars="messages = get_flashed_messages(with_categories=True)">
+  		<ul class="flashes" py:if="messages">
+			<li class="${ category }" py:for="category,message in messages" tabindex="0">${ message }</li>
+		</ul>
+	</py:with>
+	<a href="${ url_for('index') }">Liste der fertigen Schilder</a>
+	
+	<form method="post" action="${ url_for('create') }" enctype="multipart/form-data">
+		<label for="form:headline">Großer Text</label>
+		<textarea name="headline" id="form:headline" cols="35" rows="5"><py:if test="defined('form')">${form.headline}</py:if></textarea>
+		<label for="form:text">Zusatztext</label>
+		<textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
+		<label for="form:template">TeX-Vorlage</label>
+		<select name="textemplate" id="form:template">	
+			<py:choose>
+				<py:when test="defined('form')">
+				<py:for each="template in templates">
+                                        <py:choose>
+                                                <py:when test="template == form.textemplate">
+                                                        <option label="${template}" value="${template}" selected="selected">${template}</option>
+
+                                                </py:when>
+                                                <py:otherwise>
+                                                        <option label="${template}" value="${template}">${template}</option>
+                                                        
+                                                </py:otherwise>
+                                        </py:choose>
+                                </py:for>
+				</py:when>
+				<py:otherwise>
+					<option py:for="tpl in templates" label="${tpl}" value="${tpl}">${tpl}</option>
+				</py:otherwise>
+			</py:choose>
+		</select>	
+		<ul>
+			<li>
+				<py:choose>
+                                        <py:when test="defined('form')">
+                                                <input type="radio" name="img" id="img--none" value="__none" checked="${form.img == '__none'}"/>
+                                        </py:when>
+                                        <py:otherwise>
+                                                <input type="radio" name="img" id="img--none" value="__none" checked="checked" />
+                                        </py:otherwise>
+				</py:choose>
+				<label for="img--none">Kein Bild</label>
+			</li>
+			<li>
+				<input type="radio" name="img" id="img--upload" value="__upload"/>
+				<input type="file" name="imgupload"/>
+				<label for="img--upload">Bild hochladen</label>
+			</li>
+		</ul>
+		<ul>
+			<li py:for="img in images">
+				<py:choose>
+					<py:when test="defined('form')">
+						<py:choose>
+							<py:when test="img == form.img">
+								<input type="radio" name="img" id="img:${img}" value="${img}" checked="True"/>
+							</py:when>
+							<py:otherwise>
+								<input type="radio" name="img" id="img:${img}" value="${img}"/>
+							</py:otherwise>
+						</py:choose>
+					</py:when>
+					<py:otherwise>
+						<input type="radio" name="img" id="img:${img}" value="${img}"/>
+					</py:otherwise>
+				</py:choose>
+				<label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, maxgeometry=100) }" alt="${img}"/></label>
+			</li>
+		</ul>
+		<input type="submit" value="Schild erstellen"/>
+	</form>
+</body>
+</html>

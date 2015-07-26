@@ -1,0 +1,80 @@
+
+\usepackage[size=a4]{beamerposter}
+\usepackage[utf8]{inputenc}
+\usepackage{ngerman}
+\usepackage{mathtools}
+
+\usetheme{default}
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+\setbeamertemplate{headline}{} 
+
+\setbeamertemplate{footline}{\hskip.5cm 
+Edit tex/support/header.tex to create your own design.\hfill
+\includegraphics[width=.15\textwidth]{support/genericlogo}
+\hskip.5cm~
+\vskip.5cm
+} 
+
+\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+
+\usepackage{marvosym}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.arrows}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrulein tables
+
+\newcommand{\defaulthead}[1]{%
+	{\fontsize{120}{160}\selectfont #1}
+}
+
+\tikzset{
+    myarrow/.style={
+        draw,
+        fill=black,
+        single arrow,
+        minimum width=.95\linewidth,
+        minimum height=.95\linewidth,
+        single arrow head extend=1ex
+    }
+}
+\newcommand{\arrowup}{%
+\tikz [baseline=14ex]{\node [myarrow,rotate=90] {};}
+}
+\newcommand{\arrowupright}{%
+\tikz [baseline=17ex]{\node [myarrow,rotate=45] {};}
+}
+\newcommand{\arrowupleft}{%
+\tikz [baseline=17ex]{\node [myarrow,rotate=135] {};}
+}
+\newcommand{\arrowdown}{%
+\tikz [baseline=14ex]{\node [myarrow,rotate=-90] {};}
+}
+\newcommand{\arrowdownright}{%
+\tikz [baseline=12ex]{\node [myarrow,rotate=-45] {};}
+}
+\newcommand{\arrowdownleft}{%
+\tikz [baseline=12ex]{\node [myarrow,rotate=-135] {};}
+}
+\newcommand{\arrowright}{%
+\tikz [baseline=14ex]{\node [myarrow] {};}
+}
+\newcommand{\arrowleft}{%
+\tikz [baseline=14ex]{\node [myarrow,rotate=180] {};}
+}

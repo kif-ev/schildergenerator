@@ -1,0 +1,21 @@
+\documentclass{beamer}
+
+\input{support/header}
+
+\begin{document}
+
+\begin{frame}
+~ \vfill
+\defaulthead{${ form.headline }}
+\vskip.5cm
+\begin{columns}
+\column{.45\textwidth}
+	\centering
+	\arrowright
+\column{.55\textwidth}
+	\IfFileExists{ ${form.img} }{\includegraphics[width=\linewidth]{${ form.img }}}{}
+\end{columns}
+\vfill ~
+\end{frame}
+
+\end{document}

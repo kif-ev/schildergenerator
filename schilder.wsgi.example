@@ -1,0 +1,11 @@
+import logging, sys
+
+path = '/path/to/schilder'
+
+if path not in sys.path:
+	sys.path.append(path)
+
+sys.stdout = sys.stderr
+logging.basicConfig(stream=sys.stderr)
+
+from schilder import app as application

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/">
+<head>
+    <link rel='stylesheet' type='text/css' href="${ url_for('static', filename='main.css') }"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Schildergenerator</title>
+</head>
+<body>
+	<py:with vars="messages = get_flashed_messages(with_categories=True)">
+  		<ul class="flashes" py:if="messages">
+			<li class="${ category }" py:for="category,message in messages" tabindex="0">${ message }</li>
+		</ul>
+	</py:with>
+	
+	<a href="${ url_for('edit') }">Neues Schild</a>
+	
+	<py:if test="defined('files')">
+	<ul class="list">
+		<li py:for="file in files"><a href="${ url_for('schild', filename=file) }" title="${file}"><img src="${ url_for('pdfthumbnail', pdfname=file+'.pdf', maxgeometry=150) }"/></a></li>
+	</ul>
+	</py:if>
+</body>
+</html>

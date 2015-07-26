@@ -1,0 +1,116 @@
+body {
+	font-family: sans-serif;
+	font-size: 0.9rem;
+}
+body > a {
+	width:25em;
+        padding:0.5em;
+        border:1px solid lightgray;
+        border-radius:0.5em;
+        background: linear-gradient(to bottom, #fff 0%,#eee 16%,#ddd 92%,#ccc 100%);
+}
+@media (max-width:767px) {
+	body, input, select {
+		font-size: 1.0rem;
+	}
+	body > a {
+		width: 95%;
+		padding:0.5em;
+		border:1px solid lightgray;
+		border-radius:0.5em;
+		background: linear-gradient(to bottom, #f0f0f0 0%,#e2e2e2 16%,#d1d1d1 92%,#cecece 100%);
+	}
+	img.bigpreview {
+		width: 100%;
+	}
+}
+body > *, form > * {
+	display: block;
+}
+.flashes {
+	margin:0;
+	padding:0;
+}
+.flashes li {
+	list-style-type:none;
+	background:lightgreen;
+	display:block;
+	padding:10px;
+	margin:5px;
+	border-radius:1em;
+}
+.flashes li.warning {
+	background:yellow;
+}
+.flashes li.error {
+	background:red;
+	color: white;
+}
+.flashes li.log {
+	background:#ccc;
+	max-height:2em;
+	overflow:auto;
+	transition: max-height 1s ease;
+}
+.flashes li.log:focus {
+	max-height:25em;
+}
+ul.list, form > ul {
+	margin-left: 10px;
+	padding: 0;
+}
+ul.list li a img {
+	border: 1px solid gray;
+	display: block;
+}
+ul.list li {
+	border: 1px solid gray;
+	border-radius: 3px;
+	display:inline-block;
+	margin-right:10px;
+}
+img.bigpreview {
+	border: 1px solid gray;
+	border-radius: 5px;
+	margin-top: 0.5em;
+	margin-bottom:0.5em;
+}
+.bigpreview + form > * {
+	display:inline-block;
+}
+form {
+	margin-top:1em;
+	margin-bottom:1em;
+}
+form li {
+	list-style-type:none;
+	display: inline-block;
+}
+input[type="radio"] {
+	position:relative;
+	z-index:5;
+	margin-bottom:1em;
+}
+input[type="radio"]+label > img {
+	position:relative;
+	z-index:4;
+	top:0.5em;
+	left:-1.5em;
+	margin-right:-1.2em;
+	max-width: 100%;
+	max-height: 10em;
+	border:3px solid #eee;
+	border-radius: 5px;
+}
+input[type="radio"]:checked+label > img {
+	border:3px dotted red;
+}
+input[type="radio"] + input[type="file"] {
+	display:none;
+}
+input[type="radio"]:checked + input[type="file"] {
+	display:initial;
+}
+input[type="radio"]:checked + input[type="file"] + label {
+	display:none;
+}

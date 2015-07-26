@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/">
+<head>
+        <link rel='stylesheet' type='text/css' href="${ url_for('static', filename='main.css') }"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Schildergenerator</title>
+</head>
+<body>
+	<a href="${ url_for('index') }">Liste der Schilder</a>
+	<a href="${ url_for('edit') }">Neues Schild</a>
+	<py:with vars="messages = get_flashed_messages(with_categories=True)">
+  		<ul class="flashes" py:if="messages">
+			<li class="${ category }" py:for="category,message in messages">${ message }</li>
+		</ul>
+	</py:with>
+	<img class="bigpreview" src="${ url_for('pdfthumbnail', pdfname=filename+'.pdf', maxgeometry=300) }"/>
+	<form method="post" action="${ url_for('printout') }">
+		<input type="hidden" name="filename" value="${filename + '.pdf'}" />
+		<select name="copies">
+			<option py:for="x in range(1,11)" value="${x}" label="${x} Kopien">${x} Kopien</option>
+		</select>
+		<select name="printer">
+                        <option py:for="pr in printer" value="${pr}" label="Drucker ${pr}">Drucker ${pr}</option>
+                </select>
+		<input type="submit" value="Schild drucken" />
+	</form>
+	<a href="${ url_for('pdfdownload', pdfname=filename + '.pdf') }">Schild als PDF herunterladen.</a>
+	<a href="${ url_for('edit_one', filename=filename) }">Als Vorlage für ein neues Schild nehmen.</a>
+	<form method="post" action="${ url_for('delete') }">
+		<input type="hidden" name="filename" value="${filename}" />
+		<input type="submit" value="Schild löschen" />
+	</form>
+</body>
+</html>
