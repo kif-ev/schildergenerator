@@ -146,7 +146,7 @@ def create():
       imgpath = save_and_convert_image_upload('imgupload')
       if imgpath is not None:
         formdata['img'] = imgpath
-      outfilename = secure_filename(formdata['headline'][:16])+str(hash(formdata['headline']+formdata['text']+os.path.splitext(formdata['textemplate'])[0]))+'.schild'
+      outfilename = secure_filename(formdata['headline'][:16])+str(hash(formdata['headline']+formdata['text']+os.path.splitext(formdata['textemplate'])[0]+os.path.splitext(formdata['img'])[0]))+'.schild'
       outpdfname = outfilename + '.pdf'
       formdata['pdfname'] = outpdfname
       run_pdflatex(formdata, os.path.join(config.pdfdir, outpdfname))

@@ -117,14 +117,19 @@ input[type="radio"]:checked + input[type="file"] {
 input[type="radio"]:checked + input[type="file"] + label {
 	display:none;
 }
+select, button, input[type='submit'] {
+    height: 2.5em;
+    border-radius: 5px;
+    background: linear-gradient(to bottom, #fff 0%,#eee 16%,#ddd 92%,#ccc 100%);
+}
 textarea {
     display: block;
 }
 .box {
     display: inline-block;
-    background: #eee;
     border: 1px solid lightgray;
     border-radius: 5px;
     padding: 0.5em;
-    margin: 1em 0;
+    margin: 0.3em 0;
+    background: #eee linear-gradient(to bottom, #fff 0%,#eee 0.5em,#eee 92%,#e6e6e6 100%);
 }
