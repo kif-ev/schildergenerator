@@ -85,11 +85,13 @@ def edit_one(filename):
     formdata = json.load(infile)
     return edit(form=formdata)
 
-def run_pdflatex(context, outputfilename):
+def run_pdflatex(context, outputfilename, overwrite=True):
   if not context.has_key('textemplate'):
     context['textemplate'] = "text-image-quer.tex"
   genshitex = TemplateLoader([config.textemplatedir])
   template = genshitex.load(context['textemplate'], cls=NewTextTemplate, encoding='utf8')
+  if not overwrite and os.path.isfile(outputfilename) and os.path.getmtime(template.filepath) < os.path.getmtime(outputfilename):
+      return
   tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
   if context.has_key('img') and context['img'] and context['img'] != '__none':
     try:
@@ -109,11 +111,13 @@ def run_pdflatex(context, outputfilename):
   try:
     texlog = check_output(['pdflatex', '--halt-on-error', tmptexfile], stderr=STDOUT)
   except CalledProcessError as e:
-    flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % e.output), 'log')
+    if overwrite:
+        flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % e.output), 'log')
     raise SyntaxWarning("PDFLaTeX bailed out")
   finally:
     os.chdir(cwd)
-  flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % texlog), 'log')
+  if overwrite:
+    flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % texlog), 'log')
   shutil.copy(tmppdffile, outputfilename)
   shutil.rmtree(tmpdir)
 
@@ -228,6 +232,24 @@ def pdfthumbnail(pdfname, maxgeometry):
   thumbpath = make_thumb(pdfpath, maxgeometry)
   with open(thumbpath, 'r') as imgfile:
     return Response(imgfile.read(), mimetype="image/png")
+
+@app.route('/tplthumb/<tplname>/<int:maxgeometry>')
+def tplthumbnail(tplname, maxgeometry):
+  pdfpath = os.path.join(config.cachedir, secure_filename(tplname)+'.pdf')
+  try:
+    run_pdflatex(
+      { 'textemplate' : secure_filename(tplname),
+        'img'         : 'pictograms-nps-misc-camera.png',
+        'headline'    : u'Überschrift',
+        'text'        : u'Dies ist der Text, der in der UI als Text bezeichnet ist.',
+      }, pdfpath, overwrite=False
+    )
+  except Exception as e:
+    return str(e)
+  else:
+    thumbpath = make_thumb(pdfpath, maxgeometry)
+    with open(thumbpath, 'r') as imgfile:
+      return Response(imgfile.read(), mimetype="image/png")
 
 @app.route('/pdfdownload/<pdfname>')
 def pdfdownload(pdfname):

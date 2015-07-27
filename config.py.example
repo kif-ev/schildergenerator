@@ -33,6 +33,9 @@ pdfdir = datadir + '/pdf'
 # Image data directory (needs to be writeable)
 imagedir = datadir + '/images'
 
+# Cache dir (needs to be writable)
+cachedir = datadir + '/cache'
+
 # Upload temp directory (needs to be writeable)
 uploaddir = datadir + '/upload'
 
