@@ -23,6 +23,9 @@ body > a {
 	img.bigpreview {
 		width: 100%;
 	}
+      .box {
+            width: 95%;
+      }
 }
 body > *, form > * {
 	display: block;
@@ -132,4 +135,11 @@ textarea {
     padding: 0.5em;
     margin: 0.3em 0;
     background: #eee linear-gradient(to bottom, #fff 0%,#eee 0.5em,#eee 92%,#e6e6e6 100%);
+}
+label {
+  line-height: 1.8em;
+}
+.box label+select {
+  height: initial;
+  float: right;
 }

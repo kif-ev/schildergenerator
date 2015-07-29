@@ -44,6 +44,18 @@
         </div>
         <div class="box">
            <label for="form:text">Text</label>
+           <select name="markup">
+                <py:choose>
+                    <py:when test="not defined('form') or form.markup == 'rst' or form.markup == ''">
+                        <option value="latex">LaTeX</option>
+                        <option value="rst" selected="True">Wiki (reStructuredText)</option>
+                    </py:when>
+                    <py:when test="defined('form') and form.markup == 'latex'">
+                        <option value="latex" selected="True">LaTeX</option>
+                        <option value="rst">Wiki (reStructuredText)</option>
+                    </py:when>
+                </py:choose>
+           </select>
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
         </div><br/>
         <div class="box">
