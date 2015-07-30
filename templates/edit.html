@@ -26,21 +26,7 @@
            <label for="form:template">Wähle eine TeX-Vorlage:</label>
            <ul>
                 <li py:for="textemplate in templates">
-                    <py:choose>
-                        <py:when test="defined('form')">
-                            <py:choose>
-                                <py:when test="textemplate == form.textemplate">
-                                    <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}" checked="True"/>
-                                </py:when>
-                                <py:otherwise>
-                                    <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}"/>
-                                </py:otherwise>
-                            </py:choose>
-                        </py:when>
-                        <py:otherwise>
-                            <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}"/>
-                        </py:otherwise>
-                    </py:choose>
+                    <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}" py:attrs="{'checked':'checked'} if defined('form') and textemplate == form.textemplate else {}"/>
                     <label for="tpl:${textemplate}"><img src="${ url_for('tplthumbnail', tplname=textemplate, maxgeometry=72) }" alt="${textemplate}" title="${textemplate}"/></label>
                 </li>
            </ul>
@@ -52,16 +38,8 @@
         <div class="box">
            <label for="form:text">Text</label>
            <select name="markup">
-                <py:choose>
-                    <py:when test="not defined('form') or form.markup == 'rst' or form.markup == ''">
-                        <option value="latex">LaTeX</option>
-                        <option value="rst" selected="True">Wiki (reStructuredText)</option>
-                    </py:when>
-                    <py:when test="defined('form') and form.markup == 'latex'">
-                        <option value="latex" selected="True">LaTeX</option>
-                        <option value="rst">Wiki (reStructuredText)</option>
-                    </py:when>
-                </py:choose>
+                <option value="latex" py:attrs="{'selected':'True'} if not defined('form') or form.markup == 'rst' or form.markup == '' else {}">LaTeX</option>
+                <option value="rst" py:attrs="{'selected':'True'} if defined('form') and form.markup == 'latex' else {}">Wiki (reStructuredText)</option>
            </select>
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
         </div><br/>
@@ -72,14 +50,7 @@
         <label for="form:img">Wähle ein Bild (falls auf Vorlage anwendbar):</label>
         <ul>
             <li>
-                <py:choose>
-                    <py:when test="defined('form')">
-                            <input type="radio" name="img" id="img--none" value="__none" checked="${form.img == '__none'}"/>
-                    </py:when>
-                    <py:otherwise>
-                            <input type="radio" name="img" id="img--none" value="__none" checked="checked" />
-                    </py:otherwise>
-                </py:choose>
+                <input type="radio" name="img" id="img--none" value="__none" py:attrs="{'checked':'checked'} if defined('form') and form.img == '__none' else {}"/>
                 <label for="img--none">Kein Bild</label>
             </li>
             <li>
@@ -90,21 +61,7 @@
         </ul>
         <ul>
             <li py:for="img in images">
-                <py:choose>
-                    <py:when test="defined('form')">
-                        <py:choose>
-                            <py:when test="img == form.img">
-                                <input type="radio" name="img" id="img:${img}" value="${img}" checked="True"/>
-                            </py:when>
-                            <py:otherwise>
-                                <input type="radio" name="img" id="img:${img}" value="${img}"/>
-                            </py:otherwise>
-                        </py:choose>
-                    </py:when>
-                    <py:otherwise>
-                        <input type="radio" name="img" id="img:${img}" value="${img}"/>
-                    </py:otherwise>
-                </py:choose>
+                <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked'} if defined('form') and form.img == img else {}"/>
                 <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
             </li>
         </ul>
