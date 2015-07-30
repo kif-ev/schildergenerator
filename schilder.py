@@ -279,6 +279,7 @@ def tplthumbnail(tplname, maxgeometry):
              'img': 'pictograms-nps-misc-camera.png',
              'headline': u'Überschrift',
              'text': u'Dies ist der Text, der in der UI als Text bezeichnet ist.',
+             'markup': 'latex',
              }, pdfpath, overwrite=False
         )
     except Exception as e:

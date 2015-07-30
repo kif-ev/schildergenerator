@@ -2,11 +2,6 @@
 
 \input{support/header}
 
-\newcommand{\rpfeil}[2][6mm]{%
-  \tikz{\path[x=#1, y=#1, fill=black, draw=black, line width=1mm] 
-    (0,0) |- ++(#2) -- ++(0,1) -- ++(3,-3) -- ++(-3,-3) -- ++(0,1)
-    -| (4,0) -- (0,0);}}
-
 \begin{document}
 
 \begin{frame}
@@ -16,7 +11,7 @@
 \begin{columns}
 \column{.45\textwidth}
 	\centering
-	\rpfeil[15mm]{6,6}
+	\arrowupthenright
 \column{.55\textwidth}
 	\includegraphics[width=\linewidth]{${ form.img }}
 \end{columns}

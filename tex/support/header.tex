@@ -78,3 +78,12 @@ Edit tex/support/header.tex to create your own design.\hfill
 \newcommand{\arrowleft}{%
 \tikz [baseline=14ex]{\node [myarrow,rotate=180] {};}
 }
+\newcommand{\arrowupthenleft}{%
+  \tikz{\path[x=4mm, y=4mm, fill=black, draw=black, line width=0mm]
+    (0,0) -- ++(0,8) to[out=90,in=0] ++(-12,12) -- ++(-4,0) -- ++(0,8)
+    -- ++(-14,-14) -- ++(14,-14) -- ++(0,8) -| (-12,0) -- (0,0);}}
+\newcommand{\arrowupthenright}{%
+  \tikz{\path[x=4mm, y=4mm, fill=black, draw=black, line width=0mm]
+    (0,0) -- ++(0,8) to[out=90,in=180] ++(12,12) -- ++(4,0) -- ++(0,8)
+    -- ++(14,-14) -- ++(-14,-14) -- ++(0,8) -| (12,0) -- (0,0);}}
+
