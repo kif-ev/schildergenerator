@@ -63,41 +63,21 @@ def check_output(*popenargs, **kwargs):
         #raise Exception(output)
     return output
 
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in config.allowed_extensions
 
-
-@app.route('/')
-def index(**kwargs):
-    data = defaultdict(str)
-    data.update(**kwargs)
-    filelist = glob.glob(config.datadir + '/*.schild')
-    data['files'] = [unicode(os.path.basename(f)) for f in sorted(filelist)]
-    return render_response('index.html', data)
-
-
-@app.route('/edit')
-def edit(**kwargs):
-    data = defaultdict(str)
-    data.update(**kwargs)
-    imagelist = glob.glob(config.imagedir + '/*.png')
-    data['images'] = [os.path.basename(f) for f in imagelist]
-    templatelist = glob.glob(config.textemplatedir + '/*.tex')
-    data['templates'] = [unicode(os.path.basename(f))
-                         for f in sorted(templatelist)]
-    return render_response('edit.html', data)
-
-
-@app.route('/edit/<filename>')
-def edit_one(filename):
+def load_data(filename):
     with open(os.path.join(config.datadir, filename), 'r') as infile:
         formdata = defaultdict(str, json.load(infile))
+        formdata['filename'] = filename
         if len(formdata['markup']) < 1:
             formdata['markup'] = 'latex'
-        return edit(form=formdata)
-
-
+        return formdata
+        
+def save_data(formdata, outfilename):
+    with open(os.path.join(config.datadir, outfilename), 'w') as outfile:
+        json.dump(formdata, outfile)
+    
 def run_pdflatex(context, outputfilename, overwrite=True):
     if not context.has_key('textemplate'):
         context['textemplate'] = "text-image-quer.tex"
@@ -106,7 +86,6 @@ def run_pdflatex(context, outputfilename, overwrite=True):
         context['textemplate'], cls=NewTextTemplate, encoding='utf8')
     if not overwrite and os.path.isfile(outputfilename) and os.path.getmtime(template.filepath) < os.path.getmtime(outputfilename):
         return
-    print(str(context))
     if context['markup'] == 'rst':
         context['text'] = publish_parts(context['text'], writer_name='latex')['body']
         context['headline'] = publish_parts(context['headline'], writer_name='latex')['body']
@@ -141,24 +120,59 @@ def run_pdflatex(context, outputfilename, overwrite=True):
     shutil.copy(tmppdffile, outputfilename)
     shutil.rmtree(tmpdir)
 
-
 def save_and_convert_image_upload(inputname):
-    file = request.files[inputname]
-    if file:
-        if not allowed_file(file.filename):
+    imgfile = request.files[inputname]
+    if imgfile:
+        if not allowed_file(imgfile.filename):
             raise UserWarning(
                 "Uploaded image is not in the list of allowed file types.")
         filename = os.path.join(
-            config.uploaddir, secure_filename(file.filename))
-        file.save(filename)
+            config.uploaddir, secure_filename(imgfile.filename))
+        imgfile.save(filename)
         img = PythonMagick.Image(filename)
-        imgname = os.path.splitext(secure_filename(file.filename))[
+        imgname = os.path.splitext(secure_filename(imgfile.filename))[
             0].replace('.', '_') + '.png'
         savedfilename = os.path.join(config.imagedir, imgname)
         img.write(savedfilename)
         os.remove(filename)
         return imgname
     return None
+
+def make_thumb(filename, maxgeometry):
+    thumbpath = filename + '.' + str(maxgeometry)
+    if not os.path.exists(thumbpath) or os.path.getmtime(filename) > os.path.getmtime(thumbpath):
+        img = PythonMagick.Image(str(filename))
+        img.transform("%sx%s" % (maxgeometry, maxgeometry))
+        img.quality(90)
+        img.write(str("png:%s" % thumbpath))
+    return thumbpath
+
+
+
+@app.route('/')
+def index(**kwargs):
+    data = defaultdict(str)
+    data.update(**kwargs)
+    filelist = glob.glob(config.datadir + '/*.schild')
+    data['files'] = [unicode(os.path.basename(f)) for f in sorted(filelist)]
+    return render_response('index.html', data)
+
+
+@app.route('/edit')
+def edit(**kwargs):
+    data = defaultdict(str)
+    data.update(**kwargs)
+    imagelist = glob.glob(config.imagedir + '/*.png')
+    data['images'] = [os.path.basename(f) for f in imagelist]
+    templatelist = glob.glob(config.textemplatedir + '/*.tex')
+    data['templates'] = [unicode(os.path.basename(f))
+                         for f in sorted(templatelist)]
+    return render_response('edit.html', data)
+
+
+@app.route('/edit/<filename>')
+def edit_one(filename):
+    return edit(form=load_data(filename))
 
 
 @app.route('/create', methods=['POST'])
@@ -173,10 +187,12 @@ def create():
                 formdata['img'] = imgpath
             outfilename = secure_filename(formdata['headline'][:16]) + str(hash(formdata['headline'] + formdata[
                 'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0])) + '.schild'
+            if formdata['reusefilename']:
+                outfilename = secure_filename(formdata['filename'])
             outpdfname = outfilename + '.pdf'
+            formdata['filename'] = outfilename
             formdata['pdfname'] = outpdfname
-            with open(os.path.join(config.datadir, outfilename), 'w') as outfile:
-                json.dump(formdata, outfile)
+            save_data(formdata, outfilename)
             run_pdflatex(formdata, os.path.join(config.pdfdir, outpdfname))
             flash(Markup(u"""PDF created and data saved. You might create another one. Here's a preview. Click to print.<br/>
           <a href="%s"><img src="%s"/></a>""" %
@@ -244,16 +260,6 @@ def image(imgname):
         return "Meh"  # redirect(url_for('index'))
 
 
-def make_thumb(filename, maxgeometry):
-    thumbpath = filename + '.' + str(maxgeometry)
-    if not os.path.exists(thumbpath) or os.path.getmtime(filename) > os.path.getmtime(thumbpath):
-        img = PythonMagick.Image(str(filename))
-        img.transform("%sx%s" % (maxgeometry, maxgeometry))
-        img.quality(90)
-        img.write(str("png:%s" % thumbpath))
-    return thumbpath
-
-
 @app.route('/thumbnail/<imgname>/<int:maxgeometry>')
 def thumbnail(imgname, maxgeometry):
     imgpath = os.path.join(config.imagedir, secure_filename(imgname))
@@ -295,6 +301,8 @@ def pdfdownload(pdfname):
     pdfpath = os.path.join(config.pdfdir, secure_filename(pdfname))
     with open(pdfpath, 'r') as pdffile:
         return Response(pdffile.read(), mimetype="application/pdf")
+
+
 
 if __name__ == '__main__':
     app.debug = True

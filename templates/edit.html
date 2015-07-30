@@ -15,6 +15,13 @@
     <a href="${ url_for('index') }">Liste der fertigen Schilder</a>
     
     <form method="post" action="${ url_for('create') }" enctype="multipart/form-data">
+        <py:if test="defined('form') and len(form.filename) > 5">
+            <input type="hidden" name="filename" value="${form.filename}"/>
+            <div class="box">
+                <input id="form:reusefilename" type="checkbox" name="reusefilename"/>
+                <label for="form:reusefilename">Änderungen unter gleichem Dateinamen speichern: ${form.filename}</label>
+            </div>
+        </py:if>
         <div class="box">
            <label for="form:template">Wähle eine TeX-Vorlage:</label>
            <ul>
