@@ -15,19 +15,15 @@
     <a href="${ url_for('index') }">Liste der fertigen Schilder</a>
     
     <form method="post" action="${ url_for('create') }" enctype="multipart/form-data">
-        <py:if test="defined('form') and len(form.filename) > 5">
-            <input type="hidden" name="filename" value="${form.filename}"/>
-            <div class="box">
-                <input id="form:reusefilename" type="checkbox" name="reusefilename"/>
-                <label for="form:reusefilename">Änderungen unter gleichem Dateinamen speichern: ${form.filename}</label>
-            </div>
-        </py:if>
         <div class="box">
            <label for="form:template">Wähle eine TeX-Vorlage:</label>
-           <ul>
+           <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">
                 <li py:for="textemplate in templates">
-                    <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}" py:attrs="{'checked':'checked'} if defined('form') and textemplate == form.textemplate else {}"/>
+                    <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and textemplate == form.textemplate else {}"/>
                     <label for="tpl:${textemplate}"><img src="${ url_for('tplthumbnail', tplname=textemplate, maxgeometry=72) }" alt="${textemplate}" title="${textemplate}"/></label>
+                </li>
+                <li class="onlywhencollapsed">
+                    <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
                 </li>
            </ul>
         </div><br/>
@@ -44,9 +40,6 @@
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
         </div><br/>
         <div class="box">
-        <input type="submit" value="Schild erstellen"/>
-        </div><br/>
-        <div class="box">
         <label for="form:img">Wähle ein Bild (falls auf Vorlage anwendbar):</label>
         <ul>
             <li>
@@ -59,13 +52,25 @@
                 <label for="img--upload">Bild hochladen</label>
             </li>
         </ul>
-        <ul>
+        <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">
             <li py:for="img in images">
-                <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked'} if defined('form') and form.img == img else {}"/>
+                <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
                 <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
+            </li>
+            <li class="onlywhencollapsed">
+                <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
             </li>
         </ul>
         </div>
+        <br/>
+        <py:if test="defined('form') and len(form.filename) > 5">
+            <input type="hidden" name="filename" value="${form.filename}"/>
+            <div class="box">
+                <input id="form:reusefilename" type="checkbox" name="reusefilename"/>
+                <label for="form:reusefilename">Änderungen unter gleichem Dateinamen speichern: ${form.filename}</label>
+            </div>
+            <br/>
+        </py:if>
         <div class="box">
         <input type="submit" value="Schild erstellen"/>
         </div>
