@@ -9,7 +9,7 @@ Dependencies
 
   * python-flask python-genshi python-pythonmagick 
   * pdflatex latex-beamer
-  * libapache2-mod-wsgi (if not used in debug mode)
+  * libapache2-mod-wsgi for production use (or [anything capable of running WSGI apps](http://wsgi.readthedocs.org/en/latest/servers.html) really…)
 
 Config
 ------
