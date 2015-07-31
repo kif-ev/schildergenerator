@@ -88,7 +88,7 @@ def run_pdflatex(context, outputfilename, overwrite=True):
         return
     if context['markup'] == 'rst':
         context['text'] = publish_parts(context['text'], writer_name='latex')['body']
-        context['headline'] = publish_parts(context['headline'], writer_name='latex')['body']
+        #context['headline'] = publish_parts(context['headline'], writer_name='latex')['body']
     tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
     if context.has_key('img') and context['img'] and context['img'] != '__none':
         try:
