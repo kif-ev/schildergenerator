@@ -63,15 +63,13 @@
         </ul>
         </div>
         <br/>
+        <div class="box">
         <py:if test="defined('form') and len(form.filename) > 5">
             <input type="hidden" name="filename" value="${form.filename}"/>
-            <div class="box">
                 <input id="form:reusefilename" type="checkbox" name="reusefilename"/>
-                <label for="form:reusefilename">Änderungen unter gleichem Dateinamen speichern: ${form.filename}</label>
-            </div>
+                <label for="form:reusefilename">Überschreibe bisherige Version von ${form.filename}.</label>
             <br/>
         </py:if>
-        <div class="box">
         <input type="submit" value="Schild erstellen"/>
         </div>
     </form>

@@ -16,9 +16,17 @@
 	<a href="${ url_for('edit') }">Neues Schild</a>
 	
 	<py:if test="defined('files')">
-	<ul class="list">
-		<li py:for="file in files"><a href="${ url_for('schild', filename=file) }" title="${file}"><img src="${ url_for('pdfthumbnail', pdfname=file+'.pdf', maxgeometry=150) }"/></a></li>
+        <form method="POST" action="/deletelist">
+	<ul>
+		<li py:for="file in files">
+                <input id="form:${file}" type="checkbox" name="filenames" value="${file}"/>
+                <a href="${ url_for('schild', filename=file) }" title="${file}">
+                    <img src="${ url_for('pdfthumbnail', pdfname=file+'.pdf', maxgeometry=150) }"/>
+                </a>
+            </li>
 	</ul>
+            <input type="submit" value="Ausgewählte Schilder löschen"/>
+        </form>
 	</py:if>
 </body>
 </html>

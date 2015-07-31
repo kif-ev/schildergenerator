@@ -234,10 +234,7 @@ def printout():
         flash(u'Ungültige Anzahl Kopien!')
     return redirect(url_for('index'))
 
-
-@app.route('/delete', methods=['POST'])
-def delete():
-    filename = secure_filename(request.form['filename'])
+def delete_file(filename):
     try:
         os.unlink(os.path.join(config.datadir, filename))
         for f in glob.glob(os.path.join(config.pdfdir, filename + '.pdf*')):
@@ -248,6 +245,16 @@ def delete():
         flash(u"Schild %s konnte nicht gelöscht werden." % filename, 'error')
         return redirect(url_for('schild', filename=filename))
 
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    return delete_file(secure_filename(request.form['filename']))
+
+@app.route('/deletelist', methods=['POST'])
+def deletelist():
+    for filename in request.form.getlist('filenames'):
+        delete_file(secure_filename(filename))
+    return redirect(url_for('index'))
 
 @app.route('/image/<imgname>')
 def image(imgname):
