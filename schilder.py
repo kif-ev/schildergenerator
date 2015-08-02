@@ -114,12 +114,18 @@ def run_pdflatex(context, outputfilename, overwrite=True):
             ['pdflatex', '--halt-on-error', tmptexfile], stderr=STDOUT)
     except CalledProcessError as e:
         if overwrite:
-            flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % e.output), 'log')
+            try:
+                flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % e.output), 'log')
+            except:
+                print(e.output)
         raise SyntaxWarning("PDFLaTeX bailed out")
     finally:
         os.chdir(cwd)
     if overwrite:
-        flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % texlog), 'log')
+        try:
+            flash(Markup("<p>PDFLaTeX Output:</p><pre>%s</pre>" % texlog), 'log')
+        except:
+            print(texlog)
     shutil.copy(tmppdffile, outputfilename)
     shutil.rmtree(tmpdir)
 
@@ -197,22 +203,34 @@ def create():
             formdata['pdfname'] = outpdfname
             save_data(formdata, outfilename)
             run_pdflatex(formdata, os.path.join(config.pdfdir, outpdfname))
-            flash(Markup(u"""PDF created and data saved. You might create another one. Here's a preview. Click to print.<br/>
-          <a href="%s"><img src="%s"/></a>""" %
+            try:
+                flash(Markup(u"""PDF created and data saved. You might create another one. Here's a preview. Click to print.<br/>
+                                <a href="%s"><img src="%s"/></a>""" %
                          (url_for('schild', filename=outfilename), url_for(
                              'pdfthumbnail', pdfname=outpdfname, maxgeometry=200))
                          ))
+            except:
+                print("%s created" % outpdfname)
         except Exception as e:
-            flash(u"Could not create pdf or save data: %s" % str(e), 'error')
+            try:
+                flash(u"Could not create pdf or save data: %s" % str(e), 'error')
+            except:
+                print("Could not create pdf or save data: %s" % str(e))
 
         data = {'form': formdata}
         imagelist = glob.glob(config.imagedir + '/*.png')
         data['images'] = [os.path.basename(f) for f in imagelist]
         templatelist = glob.glob(config.textemplatedir + '/*.tex')
         data['templates'] = [os.path.basename(f) for f in sorted(templatelist)]
-        return redirect(url_for('edit_one', filename=outfilename))
-    flash("No POST data. You've been redirected to the edit page.", 'warning')
-    return redirect(url_for('edit'))
+        try:
+            return redirect(url_for('edit_one', filename=outfilename))
+        except:
+            pass
+    try:
+        flash("No POST data. You've been redirected to the edit page.", 'warning')
+        return redirect(url_for('edit'))
+    except:
+        pass
 
 
 @app.route('/schild/<filename>')
@@ -313,7 +331,24 @@ def pdfdownload(pdfname):
         return Response(pdffile.read(), mimetype="application/pdf")
 
 
+def recreate_cache():
+    for filename in (glob.glob(os.path.join(config.pdfdir, '*.pdf*')) +
+             glob.glob(os.path.join(config.cachedir, '*.pdf*')) +
+             glob.glob(os.path.join(config.imagedir, '*.png.*'))):
+        try:
+            os.unlink(filename)
+            print("Deleted %s" % filename)
+        except Exception as e:
+            print("Could not delete %s: %s" % (filename, str(e)))
+    for filename in glob.glob(os.path.join(config.datadir, '*.schild')):
+        data = load_data(filename)
+        pdfname = os.path.join(config.pdfdir, data['pdfname'])
+        print("Recreating %s" % pdfname)
+        run_pdflatex(data, pdfname)
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host=config.listen, port=config.port)
+    if len(sys.argv) > 1 and sys.argv[1] == '--recreate-cache':
+        recreate_cache()
+    else:
+        app.debug = True
+        app.run(host=config.listen, port=config.port)

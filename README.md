@@ -50,8 +50,21 @@ Download
 Config
 ------
 
-  * for all uses: copy config.py.example to config.py and edit it to your needs.
-  * for production use: copy schildergen.wsgi.example to schildergen.wsgi and edit it.
+  * *for all uses*: copy config.py.example to config.py and edit it to your needs.
+  * *for production use*: copy schildergen.wsgi.example to schildergen.wsgi and edit it.
+
+
+Modify the templates
+--------------------
+
+In most cases, you just need to edit  tex/support/header.tex  and add your logo
+in  tex/support . After you changed it, you might want to run
+
+	$ python schilder.py --recreate-cache
+
+to delete all cached pdf and image thumbnails, then re-run pdflatex on all 
+saved signs. Accessing the webinterface will recreate the rest of the cached 
+image thumbnails.
 
 
 Running in test/debug mode
