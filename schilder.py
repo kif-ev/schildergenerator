@@ -22,8 +22,11 @@ import tempfile
 import config
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = config.uploaddir
-app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config.update(
+    UPLOAD_FOLDER = config.uploaddir,
+    PROPAGATE_EXCEPTIONS = True,
+    MAX_CONTENT_LENGTH = 8388608L
+)
 app.secret_key = config.app_secret
 genshi = Genshi(app)
 genshi.extensions['html'] = 'html5'
@@ -92,8 +95,8 @@ def run_pdflatex(context, outputfilename, overwrite=True):
     tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
     if context.has_key('img') and context['img'] and context['img'] != '__none':
         try:
-            shutil.copy(os.path.join(config.imagedir, context[
-                        'img']), os.path.join(tmpdir, context['img']))
+            shutil.copy(os.path.join(config.imagedir, context['img']), 
+                        os.path.join(tmpdir, context['img']))
         except:
             raise IOError("COULD NOT COPY")
     else:

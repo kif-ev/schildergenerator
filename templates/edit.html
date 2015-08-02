@@ -20,7 +20,7 @@
            <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">
                 <li py:for="textemplate in templates">
                     <input type="radio" name="textemplate" id="tpl:${textemplate}" value="${textemplate}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and textemplate == form.textemplate else {}"/>
-                    <label for="tpl:${textemplate}"><img src="${ url_for('tplthumbnail', tplname=textemplate, maxgeometry=72) }" alt="${textemplate}" title="${textemplate}"/></label>
+                    <label for="tpl:${textemplate}"><img src="${ url_for('tplthumbnail', tplname=textemplate, maxgeometry=80) }" alt="${textemplate}" title="${textemplate}"/></label>
                 </li>
                 <li class="onlywhencollapsed">
                     <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
