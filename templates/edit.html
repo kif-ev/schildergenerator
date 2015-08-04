@@ -34,8 +34,8 @@
         <div class="box">
            <label for="form:text">Text</label>
            <select name="markup">
-                <option value="latex" py:attrs="{'selected':'True'} if not defined('form') or form.markup == 'rst' or form.markup == '' else {}">LaTeX</option>
-                <option value="rst" py:attrs="{'selected':'True'} if defined('form') and form.markup == 'latex' else {}">Wiki (reStructuredText)</option>
+                <option value="latex" py:attrs="{'selected':'True'} if defined('form') and form.markup == 'latex' else {}">LaTeX</option>
+                <option value="rst" py:attrs="{'selected':'True'} if not defined('form') or form.markup == 'rst' or form.markup == '' else {}">Wiki (reStructuredText)</option>
            </select>
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
         </div><br/>
