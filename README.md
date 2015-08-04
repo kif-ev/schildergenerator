@@ -10,11 +10,11 @@ You might find it useful in the following scenarios:
   * You often need to change some signs in your organization.
   * You're bored in the Fachschaftsbüro.
 
-What you need:
+What you need for this tool to unleash it's maximum potential:
 
   * A printer on premise.
   * Some kind of server, preferrably running a flavor of Linux, capable of printing
-    on said printer via lpd. A RaspberryPi would suffice, even if it's slow.
+    on said printer via lpd interface. A RaspberryPi would suffice, even if it's slow.
   * Web clients of any type being able to connect to said server.
   * The knowledge to modify a LaTeX template to fit your organizations design.
 
@@ -57,8 +57,11 @@ Config
 Modify the templates
 --------------------
 
-In most cases, you just need to edit  tex/support/header.tex  and add your logo
-in  tex/support . After you changed it, you might want to run
+In most cases, you just need to edit `tex/support/header.tex` and add your logo
+in `tex/support`. A suitable test workflow might be recreating the same sign in
+the webinterface while always saving under the same name.
+
+After you're done with modifying the template, you might want to run
 
 	$ python schilder.py --recreate-cache
 
@@ -73,6 +76,26 @@ Running in test/debug mode
 You need to have the config done. Then you could just start the server in debug mode:
 
        $ python schilder.py
+
+This will serve a webpage at http://localhost:5432/ for testing purposes.
+
+
+General directory layout
+------------------------
+
+	schildergenerator
+        ├── schilder.py
+        ├── config.py
+        ├── schilder.wsgi
+        ├── data	(sign store: needs to be writable, recursively)
+        │   ├── cache	(template preview cache)
+        │   ├── images	(image store + thumbnail cache)
+        │   ├── pdf	(pdf versions of all signs, including thumbnails)
+        │   └── upload	(image upload handler temp dir, non-empty only after errors)
+        ├── static	(static web UI files)
+        ├── templates	(web UI HTML templates)
+        └── tex		(strictly LaTeX sign templates only)
+            └── support (everything your LaTeX template needs: includes, macros, logo files, ...)
 
 
 Webserver Deployment
