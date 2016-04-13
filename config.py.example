@@ -40,7 +40,7 @@ cachedir = datadir + '/cache'
 uploaddir = datadir + '/upload'
 
 # allowed image upload file extensions
-allowed_extensions = set(['png', 'jpg', 'jpeg', 'gif'])
+allowed_extensions = set(['png', 'jpg', 'jpeg', 'gif', 'svg'])
 
 
 #### PRINTER OPTIONS
