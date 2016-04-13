@@ -39,7 +39,7 @@
            </select>
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
         </div><br/>
-        <div class="box">
+        <div class="box imageselect">
         <label for="form:img">Wähle ein Bild (falls auf Vorlage anwendbar):</label>
         <ul>
             <li>
@@ -49,7 +49,7 @@
             <li>
                 <input type="radio" name="img" id="img--upload" value="__upload"/>
                 <input type="file" name="imgupload"/>
-                <label for="img--upload">Bild hochladen</label>
+                <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
             </li>
         </ul>
         <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">

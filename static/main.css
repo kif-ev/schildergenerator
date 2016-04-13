@@ -141,6 +141,10 @@ label {
   height: initial;
   float: right;
 }
+.box.imageselect {
+  max-height: 30em;
+  overflow-y: auto;
+}
 .collapsed input, .collapsed input+label {
     opacity: 0.2;
     transform: scale(0.01);

@@ -171,11 +171,12 @@ def index(**kwargs):
 def edit(**kwargs):
     data = defaultdict(str)
     data.update(**kwargs)
-    imagelist = glob.glob(config.imagedir + '/*.png')
+    imagelist = sorted(glob.glob(config.imagedir + '/*.png'))
     data['images'] = [os.path.basename(f) for f in imagelist]
     templatelist = glob.glob(config.textemplatedir + '/*.tex')
     data['templates'] = [unicode(os.path.basename(f))
                          for f in sorted(templatelist)]
+    data['imageextensions'] = config.allowed_extensions
     return render_response('edit.html', data)
 
 
