@@ -145,4 +145,5 @@ Image Sources
 -------------
 
   * USNPS pictograms taken from the Open Icon Library: http://sourceforge.net/projects/openiconlibrary/
+  * Font Awesome pictograms are taken from the Font Awesome project: https://fortawesome.github.io/Font-Awesome/
 
