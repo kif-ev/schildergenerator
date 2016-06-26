@@ -16,7 +16,7 @@
 	<a href="${ url_for('edit') }">Neues Schild</a>
 	
 	<py:if test="defined('files')">
-        <form method="POST" action="/deletelist">
+	<form method="POST" action="${ url_for('deletelist') }">
 	<ul>
 		<li py:for="file in files">
                 <input id="form:${file}" type="checkbox" name="filenames" value="${file}"/>
