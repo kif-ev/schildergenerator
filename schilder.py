@@ -93,6 +93,8 @@ def run_pdflatex(context, outputfilename, overwrite=True):
         context['text'] = publish_parts(context['text'], writer_name='latex')['body']
         #context['headline'] = publish_parts(context['headline'], writer_name='latex')['body']
     tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
+    
+    #image
     if context.has_key('img') and context['img'] and context['img'] != '__none':
         try:
             source = os.path.join(config.imagedir, context['img'])
@@ -107,10 +109,32 @@ def run_pdflatex(context, outputfilename, overwrite=True):
             
             
         except:
-            raise IOError("COULD NOT COPY")
+            raise IOError("COULD NOT COPY IMAGE")
     else:
         # print "MEH No image"
         pass
+    
+    #logo   
+    if context.has_key('logo') and context['logo'] and context['logo'] != '__none':
+        try:
+            source = os.path.join(config.logodir, context['logo'])
+            
+            filename = os.path.split(context['logo'])[1]
+            context['logo'] = filename
+            
+            #create destinationfolder if not exist
+            dest =  os.path.join(tmpdir,filename )
+
+            shutil.copy(source, dest)
+            
+            
+        except:
+            raise IOError("COULD NOT COPY LOGO")
+    else:
+        # print "MEH No logo"
+        pass
+    
+    
     tmptexfile = os.path.join(tmpdir, 'output.tex')
     tmppdffile = os.path.join(tmpdir, 'output.pdf')
     with open(tmptexfile, 'w') as texfile:
@@ -183,6 +207,9 @@ def edit(**kwargs):
     #imagelist = sorted(glob.glob(config.imagedir + '/*.png')) #TODO
     #data['images'] = [os.path.basename(f) for f in imagelist] #TODO
     data['images'] = generateImagelist()
+    data['logos'] = generateImagelist(config.logodir)
+    data['standartLogo'] = config.standartLogo
+    data['standartFooter'] = config.standartFooter
     templatelist = glob.glob(config.textemplatedir + '/*.tex')
     data['templates'] = [unicode(os.path.basename(f))
                          for f in sorted(templatelist)]
@@ -309,6 +336,18 @@ def thumbnail(imgname,category, maxgeometry):
     with open(thumbpath, 'r') as imgfile:
         return Response(imgfile.read(), mimetype="image/png")
 
+@app.route('/logothumbnail/<category>/<imgname>/<int:maxgeometry>')
+def logothumbnail(imgname,category, maxgeometry):
+    if category == 'none':
+         imgpath = os.path.join(config.logodir, secure_filename( imgname))
+    else:
+        imgpath = os.path.join(config.logodir, category + '/' +secure_filename( imgname))
+    thumbpath = make_thumb(imgpath, maxgeometry)
+    with open(thumbpath, 'r') as imgfile:
+        return Response(imgfile.read(), mimetype="image/png")
+
+
+
 
 @app.route('/pdfthumb/<pdfname>/<int:maxgeometry>')
 def pdfthumbnail(pdfname, maxgeometry):
@@ -329,6 +368,7 @@ def tplthumbnail(tplname, maxgeometry):
              'text': u'Dies ist der Text, der in der UI als Text bezeichnet ist.',
              'markup': 'latex',
              'footer': u'Das hier ist der Footer',
+             'logo': config.standartLogo,
              }, pdfpath, overwrite=False
         )
     except Exception as e:

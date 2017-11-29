@@ -33,6 +33,16 @@ pdfdir = datadir + '/pdf'
 # Image data directory (needs to be writeable)
 imagedir = datadir + '/images'
 
+# Logo data directory (needs to be writeable)
+# if logofolder in images folder you can choose them as image as well
+logodir = imagedir + '/logo'
+
+#Logo  (muss im logopfad vorhanden sein)
+standartLogo = 'genericlogo.png'
+
+#Footer 
+standartFooter = 'Hier könnte Ihr Footer stehen'
+
 # Cache dir (needs to be writable)
 cachedir = datadir + '/cache'
 

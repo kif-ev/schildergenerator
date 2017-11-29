@@ -30,7 +30,28 @@
            <div class="collapsed">
                 <button class="onlywhencollapsed" onclick="this.parentElement.className=''; return false;" >Erweiterte Einstellungen</button>
                 <label for="form:footer">Footer Text</label>
-                <textarea name="footer" id="form:footer" cols="35" rows="5"><py:if test="defined('form')">${form.footer}</py:if></textarea>
+                <textarea name="footer" id="form:footer" cols="35" rows="5"><py:choose ><py:when test="defined('form')">${form.footer}</py:when><py:otherwise>${standartFooter}</py:otherwise></py:choose></textarea>
+                
+                
+                <ul class="category">
+                    <li py:for="key in logos.keys()">
+                       <!-- <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3> -->
+                      
+                        <ul>
+                            <li py:for="img in logos[key]">
+                                <!-- key == 'none' -->
+                                <input py:if="key!='none'" type="radio" name="logo" id="logo:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if ((defined('form') and form.logo == img) or ( img == standartLogo)) else {}"/>
+
+                                <!-- else-->
+                                <input py:if="key=='none'" type="radio" name="logo" id="logo:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if ((defined('form') and form.logo == img) or ( img == standartLogo)) else {}"/>
+                                
+                                <label for="logo:${img}"><img src="${ url_for('logothumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                    <br/>
+                </ul>
            </div>
         </div><br/>
         <div class="box">
