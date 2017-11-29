@@ -206,7 +206,7 @@ def create():
             if imgpath is not None:
                 formdata['img'] = imgpath
             outfilename = secure_filename(formdata['headline'][:16]) + str(hash(formdata['headline'] + formdata[
-                'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0])) + '.schild'
+                'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0] + formdata['footer']) )+ '.schild'
             if formdata['reusefilename']:
                 outfilename = secure_filename(formdata['filename'])
             outpdfname = outfilename + '.pdf'
@@ -328,6 +328,7 @@ def tplthumbnail(tplname, maxgeometry):
              'headline': u'Überschrift',
              'text': u'Dies ist der Text, der in der UI als Text bezeichnet ist.',
              'markup': 'latex',
+             'footer': u'Das hier ist der Footer',
              }, pdfpath, overwrite=False
         )
     except Exception as e:
@@ -345,9 +346,11 @@ def pdfdownload(pdfname):
         return Response(pdffile.read(), mimetype="application/pdf")
 
 
-def generateImagelist():
-    #imagelist = sorted(glob.glob(config.imagedir + '/*.png')) 
-    path = config.imagedir + '/'
+def generateImagelist(path = None):
+    #imagelist = sorted(glob.glob(config.imagedir + '/*.png'))
+    #standart bilder pfad
+    if(path == None): 
+        path = config.imagedir + '/'
 	
     imagelist = {}
     imagelist['none'] = []

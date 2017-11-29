@@ -2,6 +2,11 @@
 
 \input{support/header}
 
+%Standart übernehmen falls kein fottertext übergeben wird
+{% if form.footer %}
+	\renewcommand{\footer}{${form.footer}}
+{% end %}
+
 \begin{document}
 
 \begin{frame}

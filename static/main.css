@@ -166,6 +166,10 @@ ul.collapsed {
     display: none;
 }
 
+div.collapsed *{
+    display: none;
+}
+
 .collapsed input:checked, .collapsed input:checked+label {
     opacity: 1.0;
     transform: scale(1.0);
@@ -182,5 +186,5 @@ input, input+label {
 }
 .collapsed .onlywhencollapsed {
     display: inline-block;
-    transform: translateY(-35%);
+   /* transform: translateY(-35%);*/
 }

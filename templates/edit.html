@@ -27,6 +27,11 @@
                     <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
                 </li>
            </ul>
+           <div class="collapsed">
+                <button class="onlywhencollapsed" onclick="this.parentElement.className=''; return false;" >Erweiterte Einstellungen</button>
+                <label for="form:footer">Footer Text</label>
+                <textarea name="footer" id="form:footer" cols="35" rows="5"><py:if test="defined('form')">${form.footer}</py:if></textarea>
+           </div>
         </div><br/>
         <div class="box">
             <label for="form:headline">Überschrift</label>
@@ -59,7 +64,7 @@
             <li py:for="key in images.keys()">
                 <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3>
               
-                <ul>
+                <ul class="collapsed">
                     <li py:for="img in images[key]">
                         <!-- key == 'none' -->
                         <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
@@ -69,10 +74,6 @@
                         
                         <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
                     </li>
-                    <!--
-                    <li class="onlywhencollapsed">
-                        <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
-                    </li> -->
                     
                 </ul>
             </li>
