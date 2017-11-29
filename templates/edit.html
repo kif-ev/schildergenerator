@@ -52,13 +52,20 @@
                 <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
             </li>
         </ul>
-        <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">
-            <li py:for="img in images">
-                <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
-                <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
-            </li>
-            <li class="onlywhencollapsed">
-                <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
+        <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      
+     
+            <li py:for="key in images.keys()">
+                <ul>
+                    <li py:for="img in images[key]">
+                        <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                        <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
+                    </li>
+                    
+                    <li class="onlywhencollapsed">
+                        <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
+                    </li>
+                    
+                </ul>
             </li>
         </ul>
         </div>

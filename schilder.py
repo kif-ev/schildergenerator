@@ -171,8 +171,9 @@ def index(**kwargs):
 def edit(**kwargs):
     data = defaultdict(str)
     data.update(**kwargs)
-    imagelist = sorted(glob.glob(config.imagedir + '/*.png'))
-    data['images'] = [os.path.basename(f) for f in imagelist]
+    #imagelist = sorted(glob.glob(config.imagedir + '/*.png')) #TODO
+    #data['images'] = [os.path.basename(f) for f in imagelist] #TODO
+    data['images'] = generateImagelist()
     templatelist = glob.glob(config.textemplatedir + '/*.tex')
     data['templates'] = [unicode(os.path.basename(f))
                          for f in sorted(templatelist)]
@@ -219,8 +220,9 @@ def create():
                 print("Could not create pdf or save data: %s" % str(e))
 
         data = {'form': formdata}
-        imagelist = glob.glob(config.imagedir + '/*.png')
-        data['images'] = [os.path.basename(f) for f in imagelist]
+       # imagelist = glob.glob(config.imagedir + '/*.png')  #TODO unterordner hinzufügen
+       # data['images'] = [os.path.basename(f) for f in imagelist] #TODO nach unterordnern kategorieisieren
+        data['images'] = generateImagelist()
         templatelist = glob.glob(config.textemplatedir + '/*.tex')
         data['templates'] = [os.path.basename(f) for f in sorted(templatelist)]
         try:
@@ -289,9 +291,12 @@ def image(imgname):
         return "Meh"  # redirect(url_for('index'))
 
 
-@app.route('/thumbnail/<imgname>/<int:maxgeometry>')
-def thumbnail(imgname, maxgeometry):
-    imgpath = os.path.join(config.imagedir, secure_filename(imgname))
+@app.route('/thumbnail/<category>/<imgname>/<int:maxgeometry>')
+def thumbnail(imgname,category, maxgeometry):
+    if category == 'none':
+         imgpath = os.path.join(config.imagedir, secure_filename( imgname))
+    else:
+        imgpath = os.path.join(config.imagedir, category + '/' +secure_filename( imgname))
     thumbpath = make_thumb(imgpath, maxgeometry)
     with open(thumbpath, 'r') as imgfile:
         return Response(imgfile.read(), mimetype="image/png")
@@ -332,6 +337,34 @@ def pdfdownload(pdfname):
         return Response(pdffile.read(), mimetype="application/pdf")
 
 
+def generateImagelist():
+    #imagelist = sorted(glob.glob(config.imagedir + '/*.png')) 
+    path = config.imagedir + '/'
+	
+    imagelist = {}
+    imagelist['none'] = []
+	
+    files = os.walk(path)
+    print files
+    for root,dirs,files in os.walk(path):
+        for f in files:
+            if f.endswith('.png'):
+                filename = os.path.basename(f)
+                category = root.replace(path,'')
+                #print root
+                #print f
+                #print "cat"
+                #print category + "  lll"
+                if(category == ""):
+                	imagelist['none'].append(filename)
+                else:
+                    print category
+                    if category not in imagelist.keys():
+                        imagelist[category] = []
+                    imagelist[category].append(filename)
+                
+    return imagelist
+
 def recreate_cache():
     for filename in (glob.glob(os.path.join(config.pdfdir, '*.pdf*')) +
              glob.glob(os.path.join(config.cachedir, '*.pdf*')) +
@@ -351,5 +384,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--recreate-cache':
         recreate_cache()
     else:
-        app.debug = True
+       # app.debug = True
         app.run(host=config.listen, port=config.port)
