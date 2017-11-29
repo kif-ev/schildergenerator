@@ -32,7 +32,18 @@
                 <label for="form:footer">Footer Text</label>
                 <textarea name="footer" id="form:footer" cols="35" rows="5"><py:choose ><py:when test="defined('form')">${form.footer}</py:when><py:otherwise>${standartFooter}</py:otherwise></py:choose></textarea>
                 
-                
+                <label for="form:logo">Wähle ein Logo:</label>
+                <ul>
+                    <li>
+                        <input type="radio" name="logo" id="logo--none" value="__none" py:attrs="{'checked':'checked'} if defined('form') and form.logo == '__none' else {}"/>
+                        <label for="logo--none">Kein Logo</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="logo" id="logo--upload" value="__upload"/>
+                        <input type="file" name="logoupload"/>
+                        <label for="logo--upload">Logo hochladen (${', '.join(imageextensions)})</label>
+                    </li>
+                </ul>
                 <ul class="category">
                     <li py:for="key in logos.keys()">
                        <!-- <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3> -->
@@ -65,41 +76,43 @@
                 <option value="rst" py:attrs="{'selected':'True'} if not defined('form') or form.markup == 'rst' or form.markup == '' else {}">Wiki (reStructuredText)</option>
            </select>
            <textarea name="text" id="form:text" cols="35" rows="5"><py:if test="defined('form')">${form.text}</py:if></textarea>
-        </div><br/>
+        </div>
+        <br/>
         <div class="box imageselect">
-        <label for="form:img">Wähle ein Bild (falls auf Vorlage anwendbar):</label>
-        <ul>
-            <li>
-                <input type="radio" name="img" id="img--none" value="__none" py:attrs="{'checked':'checked'} if defined('form') and form.img == '__none' else {}"/>
-                <label for="img--none">Kein Bild</label>
-            </li>
-            <li>
-                <input type="radio" name="img" id="img--upload" value="__upload"/>
-                <input type="file" name="imgupload"/>
-                <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
-            </li>
-        </ul>
-        <!--<ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      -->
-        <ul class="category">
-     
-            <li py:for="key in images.keys()">
-                <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3>
-              
-                <ul class="collapsed">
-                    <li py:for="img in images[key]">
-                        <!-- key == 'none' -->
-                        <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
-                        
-                        <!-- else-->
-                        <input py:if="key=='none'" type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
-                        
-                        <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
-                    </li>
+            <label for="form:img">Wähle ein Bild (falls auf Vorlage anwendbar):</label>
+            <ul>
+                <li>
+                    <input type="radio" name="img" id="img--none" value="__none" py:attrs="{'checked':'checked'} if defined('form') and form.img == '__none' else {}"/>
+                    <label for="img--none">Kein Bild</label>
+                </li>
+                <li>
+                    <input type="radio" name="img" id="img--upload" value="__upload" onclick="this.parentElement.getElementsByTagName('ul')[0].className =''"/>
+                    <input type="file" name="imgupload"/>
+                    <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
                     
-                </ul>
-            </li>
-            <br/>
-        </ul>
+                </li>
+            </ul>
+            <!--<ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      -->
+            <ul class="category">
+         
+                <li py:for="key in images.keys()">
+                    <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3>
+                  
+                    <ul class="collapsed">
+                        <li py:for="img in images[key]">
+                            <!-- key == 'none' -->
+                            <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                            
+                            <!-- else-->
+                            <input py:if="key=='none'" type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                            
+                            <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
+                        </li>
+                        
+                    </ul>
+                </li>
+                <br/>
+            </ul>
         </div>
         <br/>
         <div class="box">

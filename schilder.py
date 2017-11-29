@@ -162,7 +162,7 @@ def run_pdflatex(context, outputfilename, overwrite=True):
     shutil.copy(tmppdffile, outputfilename)
     shutil.rmtree(tmpdir)
 
-def save_and_convert_image_upload(inputname):
+def save_and_convert_image_upload(inputname,folder):
     imgfile = request.files[inputname]
     if imgfile:
         if not allowed_file(imgfile.filename):
@@ -174,11 +174,13 @@ def save_and_convert_image_upload(inputname):
         img = PythonMagick.Image(filename)
         imgname = os.path.splitext(secure_filename(imgfile.filename))[
             0].replace('.', '_') + '.png'
-        savedfilename = os.path.join(config.imagedir, imgname)
+        savedfilename = os.path.join(folder, imgname)
         img.write(savedfilename)
         os.remove(filename)
         return imgname
     return None
+
+
 
 def make_thumb(filename, maxgeometry):
     thumbpath = filename + '.' + str(maxgeometry)
@@ -229,9 +231,14 @@ def create():
         for a in ('headline', 'text'):
             formdata[a] = unicode(formdata[a])
         try:
-            imgpath = save_and_convert_image_upload('imgupload')
+            imgpath = save_and_convert_image_upload('imgupload',config.imagedir)
             if imgpath is not None:
                 formdata['img'] = imgpath
+            
+            logopath = save_and_convert_image_upload('logoupload',config.logodir)
+            if logopath is not None:
+                formdata['logo'] = logopath
+            
             outfilename = secure_filename(formdata['headline'][:16]) + str(hash(formdata['headline'] + formdata[
                 'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0] + formdata['footer']) )+ '.schild'
             if formdata['reusefilename']:
