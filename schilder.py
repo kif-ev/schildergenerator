@@ -95,8 +95,17 @@ def run_pdflatex(context, outputfilename, overwrite=True):
     tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
     if context.has_key('img') and context['img'] and context['img'] != '__none':
         try:
-            shutil.copy(os.path.join(config.imagedir, context['img']), 
-                        os.path.join(tmpdir, context['img']))
+            source = os.path.join(config.imagedir, context['img'])
+            
+            filename = os.path.split(context['img'])[1]
+            context['img'] = filename
+            
+            #create destinationfolder if not exist
+            dest =  os.path.join(tmpdir,filename )
+
+            shutil.copy(source, dest)
+            
+            
         except:
             raise IOError("COULD NOT COPY")
     else:
@@ -283,7 +292,6 @@ def deletelist():
 @app.route('/image/<imgname>')
 def image(imgname):
     imgpath = os.path.join(config.imagedir, secure_filename(imgname))
-    # print(imgpath)
     if os.path.exists(imgpath):
         with open(imgpath, 'r') as imgfile:
             return Response(imgfile.read(), mimetype="image/png")
@@ -345,20 +353,14 @@ def generateImagelist():
     imagelist['none'] = []
 	
     files = os.walk(path)
-    print files
     for root,dirs,files in os.walk(path):
         for f in files:
             if f.endswith('.png'):
                 filename = os.path.basename(f)
                 category = root.replace(path,'')
-                #print root
-                #print f
-                #print "cat"
-                #print category + "  lll"
                 if(category == ""):
                 	imagelist['none'].append(filename)
                 else:
-                    print category
                     if category not in imagelist.keys():
                         imagelist[category] = []
                     imagelist[category].append(filename)
@@ -384,5 +386,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--recreate-cache':
         recreate_cache()
     else:
-       # app.debug = True
+        app.debug = True
         app.run(host=config.listen, port=config.port)

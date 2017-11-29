@@ -4,6 +4,7 @@
 <head>
     <link rel='stylesheet' type='text/css' href="${ url_for('static', filename='main.css') }"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="${url_for('static', filename='script.js')} "/>
     <title>Schildergenerator</title>
 </head>
 <body>
@@ -52,21 +53,30 @@
                 <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
             </li>
         </ul>
-        <ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      
+        <!--<ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      -->
+        <ul class="category">
      
             <li py:for="key in images.keys()">
+                <h3 onclick="toggleCollaps(this.parentElement.getElementsByTagName('ul')[0]);">Kategorie: ${key}</h3>
+              
                 <ul>
                     <li py:for="img in images[key]">
-                        <input type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                        <!-- key == 'none' -->
+                        <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                        
+                        <!-- else-->
+                        <input py:if="key=='none'" type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                        
                         <label for="img:${img}"><img src="${ url_for('thumbnail', imgname=img, category=key, maxgeometry=100) }" alt="${img}" title="${img}"/></label>
                     </li>
-                    
+                    <!--
                     <li class="onlywhencollapsed">
                         <button onclick="this.parentElement.parentElement.className=''; return false;" >Auswahl anzeigen</button>
-                    </li>
+                    </li> -->
                     
                 </ul>
             </li>
+            <br/>
         </ul>
         </div>
         <br/>
