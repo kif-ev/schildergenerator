@@ -91,6 +91,7 @@ form ul {
 form li {
 	list-style-type:none;
 	display: inline-block;
+	margin: 5px;
 }
 input[type="radio"], input[type="checkbox"] {
 	position:relative;
@@ -118,6 +119,22 @@ input[type="radio"]:checked + input[type="file"] {
 input[type="radio"]:checked + input[type="file"] + label {
 	display:none;
 }
+
+input[type="radio"] ~ ul.onlywhenupload {
+	display:none;
+}
+input[type="radio"]:checked ~ ul.onlywhenupload {
+	display:block;
+}
+
+input[type="radio"] ~ textarea {
+	display:none;
+}
+input[type="radio"]:checked ~ textarea {
+	display:block;
+	height: 12pt;
+}
+
 button {
     cursor: pointer;
 }
@@ -148,6 +165,7 @@ label {
 .box.imageselect {
   max-height: 30em;
   overflow-y: auto;
+  width: 99%;
 }
 .collapsed input, .collapsed input+label {
     opacity: 0.2;
@@ -171,6 +189,7 @@ ul.category li ul li{
 
 ul.collapsed li{
     display: none;
+    margin: 0;
 }
 
 div.collapsed *{

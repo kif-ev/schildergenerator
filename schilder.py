@@ -165,9 +165,11 @@ def run_pdflatex(context, outputfilename, overwrite=True):
 def save_and_convert_image_upload(inputname,folder):
     imgfile = request.files[inputname]
     if imgfile:
+        print 'debug#1'
         if not allowed_file(imgfile.filename):
             raise UserWarning(
                 "Uploaded image is not in the list of allowed file types.")
+        
         filename = os.path.join(
             config.uploaddir, secure_filename(imgfile.filename))
         imgfile.save(filename)
@@ -175,20 +177,28 @@ def save_and_convert_image_upload(inputname,folder):
         imgname = os.path.splitext(secure_filename(imgfile.filename))[
             0].replace('.', '_') + '.png'
         savedfilename = os.path.join(folder, imgname)
-        img.write(savedfilename)
+        print 'debug#end-2'
+        print savedfilename
+        print folder
+        img.write(str(savedfilename))
+        print 'debug#end-1'
         os.remove(filename)
+        print 'debug#end'
         return imgname
+    print "no file"
     return None
 
 
 
 def make_thumb(filename, maxgeometry):
+
     thumbpath = filename + '.' + str(maxgeometry)
     if not os.path.exists(thumbpath) or os.path.getmtime(filename) > os.path.getmtime(thumbpath):
         img = PythonMagick.Image(str(filename))
         img.transform("%sx%s" % (maxgeometry, maxgeometry))
         img.quality(90)
         img.write(str("png:%s" % thumbpath))
+    print filename , " #2 "
     return thumbpath
 
 
@@ -231,10 +241,37 @@ def create():
         for a in ('headline', 'text'):
             formdata[a] = unicode(formdata[a])
         try:
-            imgpath = save_and_convert_image_upload('imgupload',config.imagedir)
-            if imgpath is not None:
-                formdata['img'] = imgpath
             
+            #Bild upload
+            imagedir = config.imagedir
+            category = formdata['img--cat'] 
+            if not category:
+                category = 'none'
+                
+            #benuterdefinierte /neue kategorie
+            if(category == "__user"):
+                category = formdata['usercat']
+                if not category:
+                    category = 'none'
+
+                
+            
+            #kategorie/ordner festlegen
+            if(category != 'none'):
+                imagedir = os.path.join(imagedir , category)
+                imagedir = imagedir.replace(' ','_').replace('/','_')
+                if not os.path.exists(imagedir):
+                    os.makedirs(imagedir)
+           
+            imgpath = save_and_convert_image_upload('imgupload',imagedir)
+            if imgpath is not None:
+                if(category != 'none'):
+                    formdata['img'] =  os.path.join(category,imgpath)
+                else:
+                    formdata['img'] =  imgpath
+            
+        
+            #logo upload
             logopath = save_and_convert_image_upload('logoupload',config.logodir)
             if logopath is not None:
                 formdata['logo'] = logopath
@@ -338,7 +375,7 @@ def thumbnail(imgname,category, maxgeometry):
     if category == 'none':
          imgpath = os.path.join(config.imagedir, secure_filename( imgname))
     else:
-        imgpath = os.path.join(config.imagedir, category + '/' +secure_filename( imgname))
+        imgpath = os.path.join(config.imagedir, category ,secure_filename( imgname))
     thumbpath = make_thumb(imgpath, maxgeometry)
     with open(thumbpath, 'r') as imgfile:
         return Response(imgfile.read(), mimetype="image/png")

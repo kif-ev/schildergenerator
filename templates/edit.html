@@ -85,11 +85,22 @@
                     <input type="radio" name="img" id="img--none" value="__none" py:attrs="{'checked':'checked'} if defined('form') and form.img == '__none' else {}"/>
                     <label for="img--none">Kein Bild</label>
                 </li>
-                <li>
-                    <input type="radio" name="img" id="img--upload" value="__upload" onclick="this.parentElement.getElementsByTagName('ul')[0].className =''"/>
+                <li style="display:block">
+                    <input type="radio" name="img" id="img--upload" value="__upload"/>
                     <input type="file" name="imgupload"/>
                     <label for="img--upload">Bild hochladen (${', '.join(imageextensions)})</label>
-                    
+                    <ul class="onlywhenupload">
+                        <label for="img--cat">Wähle eine Kategorie:</label>
+                        <li py:for="key in images.keys()">
+                           <input type="radio" name="img--cat" id="img--cat:${key}" value="${key}" py:attrs="{'checked':'checked'} if key=='none' else {}"/> 
+                           <label for="img--cat:${key}">${key}</label>
+                        </li>
+                        <li style="display:ruby">
+                           <input type="radio" name="img--cat" id="img--cat:user" value="__user"/> 
+                           <label for="img--cat:user">Benutzerdefiniert:</label>
+                           <textarea name="usercat" id="img--cat:usertext" cols="32" rows="1" onclick="document.getElementById('img--cat:user').checked = 'checked'"/>
+                        </li>
+                    </ul>
                 </li>
             </ul>
             <!--<ul py:attrs="{'class':'collapsed'} if defined('form') else {}">      -->
@@ -101,7 +112,9 @@
                     <ul class="collapsed">
                         <li py:for="img in images[key]">
                             <!-- key == 'none' -->
-                            <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
+                            <input py:if="key!='none'" type="radio" name="img" id="img:${img}" value="${key + '/' + img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and key in form.img and img in form.img else {}"/>
+                            
+
                             
                             <!-- else-->
                             <input py:if="key=='none'" type="radio" name="img" id="img:${img}" value="${img}" py:attrs="{'checked':'checked', 'onfocus':'this.parentElement.parentElement.className=\'\';'} if defined('form') and form.img == img else {}"/>
