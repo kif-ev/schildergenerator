@@ -256,10 +256,10 @@ def create():
 
                 
             
-            #kategorie/ordner festlegen
+             #kategorie/ordner festlegen
             if(category != 'none'):
+                category = category.replace(' ','_').replace('/','_')
                 imagedir = os.path.join(imagedir , category)
-                imagedir = imagedir.replace(' ','_').replace('/','_')
                 if not os.path.exists(imagedir):
                     os.makedirs(imagedir)
            
