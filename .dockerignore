@@ -1,0 +1,6 @@
+data
+docker-compose.yml
+*.example
+*.pyc
+README.md
+LICENSE

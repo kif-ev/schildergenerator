@@ -1,0 +1,13 @@
+version: '2'
+services:
+  pdflatex:
+    build: ./pdflatex
+    command: /bin/true
+    image: pdflatex
+  schilder:
+    build: .
+    ports:
+     - "5432:5432"
+    image: schilder
+    volumes: 
+     - ./data:/app/data

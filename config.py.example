@@ -7,7 +7,7 @@ app_secret = ''
 
 ## You will need to use absolute paths!
 
-# Base directory. You need to set this again in schilder.wsgi if you use WSGI.
+# Base directory. You need to set this again in schilder.wsgi if you use WSGI. '/app' if you use docker.
 basedir = '/path/to/schildergenerator'
 
 # Temp directory for imagemagick/pdflatex work files (needs to be writeable)
