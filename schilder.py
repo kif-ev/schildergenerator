@@ -93,15 +93,48 @@ def run_pdflatex(context, outputfilename, overwrite=True):
         context['text'] = publish_parts(context['text'], writer_name='latex')['body']
         #context['headline'] = publish_parts(context['headline'], writer_name='latex')['body']
     tmpdir = tempfile.mkdtemp(dir=config.tmpdir)
+    
+    #image
     if context.has_key('img') and context['img'] and context['img'] != '__none':
         try:
-            shutil.copy(os.path.join(config.imagedir, context['img']), 
-                        os.path.join(tmpdir, context['img']))
+            source = os.path.join(config.imagedir, context['img'])
+            
+            filename = os.path.split(context['img'])[1]
+            context['img'] = filename
+            
+            #create destinationfolder if not exist
+            dest =  os.path.join(tmpdir,filename )
+
+            shutil.copy(source, dest)
+            
+            
         except:
-            raise IOError("COULD NOT COPY")
+            raise IOError("COULD NOT COPY IMAGE")
     else:
         # print "MEH No image"
         pass
+    
+    #logo   
+    if context.has_key('logo') and context['logo'] and context['logo'] != '__none':
+        try:
+            source = os.path.join(config.logodir, context['logo'])
+            
+            filename = os.path.split(context['logo'])[1]
+            context['logo'] = filename
+            
+            #create destinationfolder if not exist
+            dest =  os.path.join(tmpdir,filename )
+
+            shutil.copy(source, dest)
+            
+            
+        except:
+            raise IOError("COULD NOT COPY LOGO")
+    else:
+        # print "MEH No logo"
+        pass
+    
+    
     tmptexfile = os.path.join(tmpdir, 'output.tex')
     tmppdffile = os.path.join(tmpdir, 'output.pdf')
     with open(tmptexfile, 'w') as texfile:
@@ -129,31 +162,43 @@ def run_pdflatex(context, outputfilename, overwrite=True):
     shutil.copy(tmppdffile, outputfilename)
     shutil.rmtree(tmpdir)
 
-def save_and_convert_image_upload(inputname):
+def save_and_convert_image_upload(inputname,folder):
     imgfile = request.files[inputname]
     if imgfile:
+        print 'debug#1'
         if not allowed_file(imgfile.filename):
             raise UserWarning(
                 "Uploaded image is not in the list of allowed file types.")
+        
         filename = os.path.join(
             config.uploaddir, secure_filename(imgfile.filename))
         imgfile.save(filename)
         img = PythonMagick.Image(filename)
         imgname = os.path.splitext(secure_filename(imgfile.filename))[
             0].replace('.', '_') + '.png'
-        savedfilename = os.path.join(config.imagedir, imgname)
-        img.write(savedfilename)
+        savedfilename = os.path.join(folder, imgname)
+        print 'debug#end-2'
+        print savedfilename
+        print folder
+        img.write(str(savedfilename))
+        print 'debug#end-1'
         os.remove(filename)
+        print 'debug#end'
         return imgname
+    print "no file"
     return None
 
+
+
 def make_thumb(filename, maxgeometry):
+
     thumbpath = filename + '.' + str(maxgeometry)
     if not os.path.exists(thumbpath) or os.path.getmtime(filename) > os.path.getmtime(thumbpath):
         img = PythonMagick.Image(str(filename))
         img.transform("%sx%s" % (maxgeometry, maxgeometry))
         img.quality(90)
         img.write(str("png:%s" % thumbpath))
+    print filename , " #2 "
     return thumbpath
 
 
@@ -171,8 +216,12 @@ def index(**kwargs):
 def edit(**kwargs):
     data = defaultdict(str)
     data.update(**kwargs)
-    imagelist = sorted(glob.glob(config.imagedir + '/*.png'))
-    data['images'] = [os.path.basename(f) for f in imagelist]
+    #imagelist = sorted(glob.glob(config.imagedir + '/*.png')) #TODO
+    #data['images'] = [os.path.basename(f) for f in imagelist] #TODO
+    data['images'] = generateImagelist()
+    data['logos'] = generateImagelist(config.logodir)
+    data['standartLogo'] = config.standartLogo
+    data['standartFooter'] = config.standartFooter
     templatelist = glob.glob(config.textemplatedir + '/*.tex')
     data['templates'] = [unicode(os.path.basename(f))
                          for f in sorted(templatelist)]
@@ -192,11 +241,43 @@ def create():
         for a in ('headline', 'text'):
             formdata[a] = unicode(formdata[a])
         try:
-            imgpath = save_and_convert_image_upload('imgupload')
+            
+            #Bild upload
+            imagedir = config.imagedir
+            category = formdata['img--cat'] 
+            if not category:
+                category = 'none'
+                
+            #benuterdefinierte /neue kategorie
+            if(category == "__user"):
+                category = formdata['usercat']
+                if not category:
+                    category = 'none'
+
+                
+            
+             #kategorie/ordner festlegen
+            if(category != 'none'):
+                category = category.replace(' ','_').replace('/','_')
+                imagedir = os.path.join(imagedir , category)
+                if not os.path.exists(imagedir):
+                    os.makedirs(imagedir)
+           
+            imgpath = save_and_convert_image_upload('imgupload',imagedir)
             if imgpath is not None:
-                formdata['img'] = imgpath
+                if(category != 'none'):
+                    formdata['img'] =  os.path.join(category,imgpath)
+                else:
+                    formdata['img'] =  imgpath
+            
+        
+            #logo upload
+            logopath = save_and_convert_image_upload('logoupload',config.logodir)
+            if logopath is not None:
+                formdata['logo'] = logopath
+            
             outfilename = secure_filename(formdata['headline'][:16]) + str(hash(formdata['headline'] + formdata[
-                'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0])) + '.schild'
+                'text'] + os.path.splitext(formdata['textemplate'])[0] + os.path.splitext(formdata['img'])[0] + formdata['footer']) )+ '.schild'
             if formdata['reusefilename']:
                 outfilename = secure_filename(formdata['filename'])
             outpdfname = outfilename + '.pdf'
@@ -219,8 +300,9 @@ def create():
                 print("Could not create pdf or save data: %s" % str(e))
 
         data = {'form': formdata}
-        imagelist = glob.glob(config.imagedir + '/*.png')
-        data['images'] = [os.path.basename(f) for f in imagelist]
+       # imagelist = glob.glob(config.imagedir + '/*.png')  #TODO unterordner hinzufügen
+       # data['images'] = [os.path.basename(f) for f in imagelist] #TODO nach unterordnern kategorieisieren
+        data['images'] = generateImagelist()
         templatelist = glob.glob(config.textemplatedir + '/*.tex')
         data['templates'] = [os.path.basename(f) for f in sorted(templatelist)]
         try:
@@ -281,7 +363,6 @@ def deletelist():
 @app.route('/image/<imgname>')
 def image(imgname):
     imgpath = os.path.join(config.imagedir, secure_filename(imgname))
-    # print(imgpath)
     if os.path.exists(imgpath):
         with open(imgpath, 'r') as imgfile:
             return Response(imgfile.read(), mimetype="image/png")
@@ -289,12 +370,27 @@ def image(imgname):
         return "Meh"  # redirect(url_for('index'))
 
 
-@app.route('/thumbnail/<imgname>/<int:maxgeometry>')
-def thumbnail(imgname, maxgeometry):
-    imgpath = os.path.join(config.imagedir, secure_filename(imgname))
+@app.route('/thumbnail/<category>/<imgname>/<int:maxgeometry>')
+def thumbnail(imgname,category, maxgeometry):
+    if category == 'none':
+         imgpath = os.path.join(config.imagedir, secure_filename( imgname))
+    else:
+        imgpath = os.path.join(config.imagedir, category ,secure_filename( imgname))
     thumbpath = make_thumb(imgpath, maxgeometry)
     with open(thumbpath, 'r') as imgfile:
         return Response(imgfile.read(), mimetype="image/png")
+
+@app.route('/logothumbnail/<category>/<imgname>/<int:maxgeometry>')
+def logothumbnail(imgname,category, maxgeometry):
+    if category == 'none':
+         imgpath = os.path.join(config.logodir, secure_filename( imgname))
+    else:
+        imgpath = os.path.join(config.logodir, category + '/' +secure_filename( imgname))
+    thumbpath = make_thumb(imgpath, maxgeometry)
+    with open(thumbpath, 'r') as imgfile:
+        return Response(imgfile.read(), mimetype="image/png")
+
+
 
 
 @app.route('/pdfthumb/<pdfname>/<int:maxgeometry>')
@@ -315,6 +411,8 @@ def tplthumbnail(tplname, maxgeometry):
              'headline': u'Überschrift',
              'text': u'Dies ist der Text, der in der UI als Text bezeichnet ist.',
              'markup': 'latex',
+             'footer': u'Das hier ist der Footer',
+             'logo': config.standartLogo,
              }, pdfpath, overwrite=False
         )
     except Exception as e:
@@ -331,6 +429,30 @@ def pdfdownload(pdfname):
     with open(pdfpath, 'r') as pdffile:
         return Response(pdffile.read(), mimetype="application/pdf")
 
+
+def generateImagelist(path = None):
+    #imagelist = sorted(glob.glob(config.imagedir + '/*.png'))
+    #standart bilder pfad
+    if(path == None): 
+        path = config.imagedir + '/'
+	
+    imagelist = {}
+    imagelist['none'] = []
+	
+    files = os.walk(path)
+    for root,dirs,files in os.walk(path):
+        for f in files:
+            if f.endswith('.png'):
+                filename = os.path.basename(f)
+                category = root.replace(path,'')
+                if(category == ""):
+                	imagelist['none'].append(filename)
+                else:
+                    if category not in imagelist.keys():
+                        imagelist[category] = []
+                    imagelist[category].append(filename)
+                
+    return imagelist
 
 def recreate_cache():
     for filename in (glob.glob(os.path.join(config.pdfdir, '*.pdf*')) +

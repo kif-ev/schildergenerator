@@ -6,6 +6,10 @@
 
 \usetheme{default}
 
+%soll überschrieben werden
+\newcommand{\footer}{Edit tex/support/header.tex to create your own design.}
+\newcommand{\mylogo}{support/genericlogo}
+
 %\usecolortheme{albatross}
 %\usecolortheme{beaver}
 %\usecolortheme{beetle}
@@ -24,8 +28,8 @@
 \setbeamertemplate{headline}{} 
 
 \setbeamertemplate{footline}{\hskip.5cm 
-Edit tex/support/header.tex to create your own design.\hfill
-\includegraphics[width=.15\textwidth]{support/genericlogo}
+\footer \hfill
+\IfFileExists{ ${form.img} }{\includegraphics[width=.15\textwidth]{\mylogo}}{}
 \hskip.5cm~
 \vskip.5cm
 } 

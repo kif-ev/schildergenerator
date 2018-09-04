@@ -36,10 +36,13 @@ Dependencies
 
   * python-flask, python-genshi 
   * python-pythonmagick, graphicsmagick
-  * pdflatex, latex-beamer
+  * pdflatex, latex-beamer, texlive-latex-extra, lexlive-lang-german
+  * cups, cups-bsd 
+  * some pypi-packages: requirements.txt 
   * libapache2-mod-wsgi for production use 
     (or [anything capable of running WSGI apps](http://wsgi.readthedocs.org/en/latest/servers.html) really…)
-
+  or
+  * docker.io, docker-compose
 
 Download
 --------
@@ -50,15 +53,15 @@ Download
 Config
 ------
 
-  * *for all uses*: copy config.py.example to config.py and edit it to your needs.
-  * *for production use*: copy schildergen.wsgi.example to schildergen.wsgi and edit it.
+  * *for testing and production use using wsgi*: copy config.py.example to config.py and edit it to your needs.
+  * *for production use using wsgi*: copy schildergen.wsgi.example to schildergen.wsgi and edit it.
+  * *for using docker*: copy config.py.docker to config.py and edit it to your needs.
 
 
 Modify the templates
 --------------------
 
-In most cases, you just need to edit `tex/support/header.tex` and add your logo
-in `tex/support`. A suitable test workflow might be recreating the same sign in
+A suitable test workflow might be recreating the same sign in
 the webinterface while always saving under the same name.
 
 After you're done with modifying the template, you might want to run
@@ -140,6 +143,7 @@ Contributors
   * Lars Beckers <larsb@fsmpi.rwth-aachen.de>
   * Moritz Holtz <moritz@fsmpi.rwth-aachen.de>
   * Konstantin Kotenko <konstantin@fsmpi.rwth-aachen.de>
+  * Christoph Heinen <heinen.fsinfo@uni-bonn.de>
 
 Image Sources
 -------------

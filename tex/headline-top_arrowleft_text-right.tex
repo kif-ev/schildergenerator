@@ -2,6 +2,16 @@
 
 \input{support/header}
 
+%Standart übernehmen falls kein fottertext übergeben wird
+{% if form.footer %}
+	\renewcommand{\footer}{${form.footer}}
+{% end %}
+
+
+{% if form.logo %}
+	\renewcommand{\mylogo}{${form.logo}}
+{% end %}
+
 \begin{document}
 
 \begin{frame}

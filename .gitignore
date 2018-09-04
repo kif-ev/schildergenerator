@@ -37,3 +37,11 @@ schilder.wsgi
 
 *.png.*
 *.schild.*
+
+data/upload
+
+#schild files
+*.schild
+!GenericEvent42-1.schild
+!GenericEvent42-2.schild
+!GenericEvent42-3.schild

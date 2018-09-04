@@ -1,0 +1,14 @@
+# This file is used by pip to install required python packages
+# Usage: pip install -r requirements.txt
+
+# Packages
+Flask==0.12.2
+Flask-Genshi==0.5.1
+Genshi==0.7
+docutils==0.14
+
+
+
+
+# Development tools
+
